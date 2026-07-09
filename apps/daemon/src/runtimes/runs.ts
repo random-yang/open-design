@@ -187,6 +187,8 @@ export function createChatRunService({
     signal: run.signal,
     error: run.error ?? null,
     errorCode: run.errorCode ?? null,
+    failureCategory: run.failureCategory ?? null,
+    failureDetail: run.failureDetail ?? null,
     resumable: run.resumable ?? false,
     eventsLogPath: run.eventsLogPath ?? null,
     workspace: run.workspace ?? projectWorkspaceProvenance(run.projectMetadata),
@@ -202,7 +204,14 @@ export function createChatRunService({
     run.exitCode = code;
     run.signal = signal;
     run.updatedAt = Date.now();
-    emit(run, 'end', { code, signal, status, resumable: run.resumable ?? false });
+    emit(run, 'end', {
+      code,
+      signal,
+      status,
+      resumable: run.resumable ?? false,
+      failureCategory: run.failureCategory ?? null,
+      failureDetail: run.failureDetail ?? null,
+    });
     for (const sse of run.clients) sse.end();
     run.clients.clear();
     for (const waiter of run.waiters) waiter(statusBody(run));
